@@ -24,20 +24,25 @@ class SmartPDFLoader(BaseReader):
         self.pdf_reader = LayoutPDFReader(llmsherpa_api_url)
 
     def load_data(
-        self, pdf_path_or_url: str, extra_info: Optional[Dict] = None
+        self,
+        pdf_path_or_url: str,
+        extra_info: Optional[Dict] = None,
+        contents: Optional[bytes] = None,
     ) -> List[Document]:
         """
         Load data and extract table from PDF file.
 
         Args:
             pdf_path_or_url (str): A url or file path pointing to the PDF
+        contents: bytes
+            contents of the pdf file. If contents is given, path_or_url is ignored. This is useful when you already have the pdf file contents in memory such as if you are using streamlit or flask.
 
         Returns:
             List[Document]: List of documents.
 
         """
         results = []
-        doc = self.pdf_reader.read_pdf(str(pdf_path_or_url))
+        doc = self.pdf_reader.read_pdf(str(pdf_path_or_url), contents)
         for chunk in doc.chunks():
             document = Document(
                 text=chunk.to_context_text(),
